@@ -6,8 +6,9 @@
 
     <script src="/js/d3.min.js"></script>
     <style>
-
-
+      .bar {
+        fill: steelblue;
+      }
     </style>
   </head>
   <body>
@@ -21,7 +22,7 @@
               height = svg.attr("height") - margin;
 
     // define scales for x and y axes
-    var xScale = d3.scaleBand().range([0, width]).padding(1),
+    var xScale = d3.scaleBand().range([0, width]).padding(0.4),
         yScale = d3.scaleLinear().range([height, 0]);
 
     // add a group element to the SVG. position graph and add some margin
@@ -38,7 +39,7 @@
     xScale.domain(data.map(function(d) { return d.material; }));
     yScale.domain([0, d3.max(data, function(d) { return d.weight; })]);
 
-    //add axes to the SVG
+    //add axes to the SVG / shifts x-axis toward bottom of the SVG
     g.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(xScale));
@@ -52,7 +53,17 @@
         .attr("dy", "0.71em")
         .attr("text-anchor", "end")
         .text("value");
-});
+
+
+        g.selectAll(".bar")
+           .data(data)
+           .enter().append("rect")
+           .attr("class", "bar")
+           .attr("x", function(d) { return xScale(d.material); })
+           .attr("y", function(d) { return yScale(d.weight); })
+           .attr("width", xScale.bandwidth())
+           .attr("height", function(d) { return height - yScale(d.weight); });
+      });
 
   </script>
   </body>

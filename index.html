@@ -4,11 +4,16 @@
     <meta charset="utf-8">
     <title>D3</title>
 
-    <script src="/js/d3.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <!-- <script src="/js/d3.min.js"></script> -->
     <style>
       .bar {
         fill: steelblue;
         /*fill: #3b5323;*/
+      }
+
+      .highlight {
+        fill: orange;
       }
     </style>
   </head>
@@ -83,11 +88,58 @@
            .data(data)
            .enter().append("rect")
            .attr("class", "bar")
+           .on("mouseover", onMouseOver)
+           .on("mouseout", onMouseOut)
            .attr("x", function(d) { return xScale(d.material); })
            .attr("y", function(d) { return yScale(d.weight); })
            .attr("width", xScale.bandwidth())
+           .transition()
+           .ease(d3.easeLinear)
+           .duration(400)
+           .delay(function (d, i){
+             return i * 50;
+           })
            .attr("height", function(d) { return height - yScale(d.weight); });
       });
+
+
+      //mouseover event handler function
+      function onMouseOver(d, i) {
+          d3.select(this).attr('class', 'highlight');
+          d3.select(this)
+            .transition()     // adds animation
+            .duration(400)
+            .attr("width", x.bandwidth() + 5)
+            .attr("y", function(d) { return y(d.weight) - 10; })
+            .attr("height", function(d) { return height - y(d.weight) + 10; });
+
+          g.append("text")
+           .attr('class', 'val')
+           .attr('x', function() {
+               return x(d.material);
+           })
+           .attr('y', function() {
+               return y(d.weight) - 15;
+           })
+           .text(function() {
+               return [ d.weight];  // Value of the text
+           });
+      }
+
+      //mouseout event handler function
+      function onMouseOut(d, i) {
+          // use the text label class to remove label on mouseout
+          d3.select(this).attr('class', 'bar');
+          d3.select(this)
+            .transition()     // adds animation
+            .duration(400)
+            .attr('width', x.bandwidth())
+            .attr("y", function(d) { return y(d.weight); })
+            .attr("height", function(d) { return height - y(d.weight); });
+
+          d3.selectAll('.val')
+            .remove()
+      }
 
 
 

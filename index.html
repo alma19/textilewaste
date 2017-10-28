@@ -23,7 +23,7 @@
 
     // define scales for x and y axes
     var xScale = d3.scaleBand().range([0, width]).padding(0.4),
-        yScale = d3.scaleLinear().range([height, 0]);
+       yScale = d3.scaleLinear().range([height, 0]);
 
     // add a group element to the SVG. position graph and add some margin
     var g = svg.append("g")
@@ -31,13 +31,19 @@
 
     // load data
     d3.csv("weighttons.csv", function(error, data) {
+        console.log(data);
+        // data.forEach(function(d) {
+        //   d.weight = parseInt(d.weight);
+        // });
         if (error) {
             throw error;
         }
 
     //provide domain values to x and y scales
     xScale.domain(data.map(function(d) { return d.material; }));
+
     yScale.domain([0, d3.max(data, function(d) { return d.weight; })]);
+
 
     //add axes to the SVG / shifts x-axis toward bottom of the SVG
     g.append("g")
